@@ -176,14 +176,14 @@ def main(args):
         weight_path=args.discrete_vae_weight_path, d_vae_type=args.discrete_vae_type,
         device=device, image_size=args.second_input_size)
 
-    if True:  # args.distributed:
+    if True:  # args.distributed:           分布式的data sampler
         num_tasks = utils.get_world_size()
         global_rank = utils.get_rank()
         sampler_rank = global_rank
-        num_training_steps_per_epoch = len(dataset_train) // args.batch_size // num_tasks
+        num_training_steps_per_epoch = len(dataset_train) // args.batch_size // num_tasks   # 每个epoch训练的iter数 = dataset lenght / (bsz * 总gpu数)
 
         sampler_train = torch.utils.data.DistributedSampler(
-            dataset_train, num_replicas=num_tasks, rank=sampler_rank, shuffle=True
+            dataset_train, num_replicas=num_tasks, rank=sampler_rank, shuffle=True          # 一共生成总GPU数个 数据采样器
         )
         print("Sampler_train = %s" % str(sampler_train))
     else:
